@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function StartScreen({
   onStart,
@@ -14,6 +14,10 @@ export default function StartScreen({
   const [hoveredDifficulty, setHoveredDifficulty] = useState(null);
   const [tempKey, setTempKey] = useState(apiKey);
   const [showKeyInput, setShowKeyInput] = useState(false);
+
+  useEffect(() => {
+    setTempKey(apiKey);
+  }, [apiKey]);
 
   const sections = [
     {

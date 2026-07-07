@@ -10,7 +10,8 @@ function App() {
   const [difficulty, setDifficulty] = useState(null);
   
   const [useAI, setUseAI] = useState(() => {
-    return localStorage.getItem("vrp_use_ai") === "true";
+    const saved = localStorage.getItem("vrp_use_ai");
+    return saved !== null ? saved === "true" : true; // Default to true
   });
   
   const [apiKey, setApiKey] = useState(() => {
