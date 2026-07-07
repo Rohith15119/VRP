@@ -1,9 +1,19 @@
 import { useState } from "react";
 
-export default function StartScreen({ onStart, onStartEmail, onStartPassage }) {
+export default function StartScreen({
+  onStart,
+  onStartEmail,
+  onStartPassage,
+  useAI,
+  setUseAI,
+  apiKey,
+  setApiKey,
+}) {
   const [selectedSection, setSelectedSection] = useState(null); // "sentence", "email", or "passage"
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const [hoveredDifficulty, setHoveredDifficulty] = useState(null);
+  const [tempKey, setTempKey] = useState(apiKey);
+  const [showKeyInput, setShowKeyInput] = useState(false);
 
   const sections = [
     {
@@ -67,6 +77,12 @@ export default function StartScreen({ onStart, onStartEmail, onStartPassage }) {
 
   const handleStart = () => {
     if (selectedSection === "sentence" && selectedDifficulty) {
+      // If using AI, verify key is set
+      if (useAI && !apiKey) {
+        setShowKeyInput(true);
+        alert("Please enter and save your Gemini API Key first to generate AI questions!");
+        return;
+      }
       onStart(selectedDifficulty);
     } else if (selectedSection === "email") {
       onStartEmail();
@@ -84,10 +100,16 @@ export default function StartScreen({ onStart, onStartEmail, onStartPassage }) {
     if (selectedSection === "email") return "Start Email Writing Challenge →";
     if (selectedSection === "passage") return "Start Passage Recall Challenge →";
     if (selectedSection === "sentence" && selectedDifficulty) {
-      return `Start ${selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1)} Challenge →`;
+      return `Start ${selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1)} Challenge ${useAI ? "(AI)" : ""} →`;
     }
     if (selectedSection === "sentence") return "Select a difficulty to begin";
     return "Select a section to begin";
+  };
+
+  const handleSaveKey = () => {
+    setApiKey(tempKey);
+    alert("Gemini API Key saved successfully! Ready to generate random questions.");
+    setShowKeyInput(false);
   };
 
   return (
@@ -159,8 +181,8 @@ export default function StartScreen({ onStart, onStartEmail, onStartPassage }) {
               <span className="info-text">25 sec / question</span>
             </div>
             <div className="info-card">
-              <span className="info-icon">🎲</span>
-              <span className="info-text">Random Every Time</span>
+              <span className="info-icon">🤖</span>
+              <span className="info-text">{useAI ? "AI Generated" : "Static Pool"}</span>
             </div>
           </div>
           <div className="instructions-box">
@@ -170,7 +192,7 @@ export default function StartScreen({ onStart, onStartEmail, onStartPassage }) {
               <li>You have <strong>25 seconds</strong> for each sentence</li>
               <li>Click <strong>"Next"</strong> or press <strong>Enter</strong> when you are finished</li>
               <li>Questions are <strong>randomized</strong> every attempt</li>
-              <li>Use hints sparingly — they won't affect your score but track your independence</li>
+              {useAI && <li><strong>AI Mode active</strong>: Questions will be generated dynamically on-the-fly</li>}
             </ul>
           </div>
         </div>
@@ -267,6 +289,55 @@ export default function StartScreen({ onStart, onStartEmail, onStartPassage }) {
                 )}
               </div>
             ))}
+          </div>
+
+          {/* AI Generator Settings */}
+          <div className="ai-settings-card">
+            <label className="ai-toggle-label">
+              <input
+                type="checkbox"
+                checked={useAI}
+                onChange={(e) => setUseAI(e.target.checked)}
+              />
+              <span className="toggle-custom"></span>
+              <span className="toggle-text">🤖 Enable AI Question Generator (Powered by Gemini)</span>
+            </label>
+
+            {useAI && (
+              <div className="ai-key-section">
+                <div className="key-header">
+                  <span className="key-title">Gemini API Key:</span>
+                  <button className="btn-toggle-input" onClick={() => setShowKeyInput(!showKeyInput)}>
+                    {showKeyInput ? "Hide Key ▲" : apiKey ? "Change Key ⚙️" : "Enter Key 🔑"}
+                  </button>
+                </div>
+                
+                {apiKey && !showKeyInput && (
+                  <div className="key-saved-indicator">
+                    <span>API Key saved locally ✓</span>
+                  </div>
+                )}
+
+                {(showKeyInput || !apiKey) && (
+                  <div className="key-input-group">
+                    <input
+                      type="password"
+                      className="key-input"
+                      placeholder="AIzaSy..."
+                      value={tempKey}
+                      onChange={(e) => setTempKey(e.target.value)}
+                    />
+                    <button className="btn-save-key" onClick={handleSaveKey}>
+                      Save Key
+                    </button>
+                  </div>
+                )}
+                
+                <p className="key-tip">
+                  Get a free Gemini API key from <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer">Google AI Studio</a>. Keys are stored locally in your browser.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}

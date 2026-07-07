@@ -8,6 +8,14 @@ import "./index.css";
 function App() {
   const [screen, setScreen] = useState("start"); // "start", "test", "email", "passage"
   const [difficulty, setDifficulty] = useState(null);
+  
+  const [useAI, setUseAI] = useState(() => {
+    return localStorage.getItem("vrp_use_ai") === "true";
+  });
+  
+  const [apiKey, setApiKey] = useState(() => {
+    return localStorage.getItem("vrp_gemini_api_key") || "";
+  });
 
   const handleStart = (selectedDifficulty) => {
     setDifficulty(selectedDifficulty);
@@ -39,6 +47,16 @@ function App() {
           onStart={handleStart}
           onStartEmail={handleStartEmail}
           onStartPassage={handleStartPassage}
+          useAI={useAI}
+          setUseAI={(val) => {
+            setUseAI(val);
+            localStorage.setItem("vrp_use_ai", val ? "true" : "false");
+          }}
+          apiKey={apiKey}
+          setApiKey={(val) => {
+            setApiKey(val);
+            localStorage.setItem("vrp_gemini_api_key", val);
+          }}
         />
       )}
       {screen === "test" && (
@@ -46,6 +64,8 @@ function App() {
           difficulty={difficulty}
           onFinish={handleFinish}
           onBack={handleBack}
+          useAI={useAI}
+          apiKey={apiKey}
         />
       )}
       {screen === "email" && (

@@ -4,7 +4,7 @@ import { getRandomQuestions } from "../data/questions";
 const TIMER_DURATION = 25; // seconds per question
 const TOTAL_QUESTIONS = 20;
 
-export default function TestScreen({ difficulty, onFinish, onBack }) {
+export default function TestScreen({ difficulty, onFinish, onBack, useAI, apiKey }) {
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -12,6 +12,11 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
   const [isFinished, setIsFinished] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(0);
+  
+  // AI states
+  const [loadingAI, setLoadingAI] = useState(false);
+  const [aiError, setAiError] = useState(null);
+
   const inputRef = useRef(null);
   const timerRef = useRef(null);
   const currentIndexRef = useRef(0);
@@ -26,11 +31,177 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
     questionsRef.current = questions;
   }, [questions]);
 
+  // Load questions (AI or Local)
+  const loadQuestions = useCallback(async () => {
+    if (useAI && apiKey) {
+      setLoadingAI(true);
+      setAiError(null);
+      try {
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [
+                    {
+                      text: `Generate 20 unique sentence completion questions for TCS NQT Verbal Ability practice.
+Difficulty: ${difficulty.toUpperCase()}
+
+Guidelines based on difficulty level:
+${
+  difficulty === "easy"
+    ? `Easy level: Focus on simple sentences testing basic grammar/vocabulary confusions. Frame questions testing these exact concepts:
+1. send vs give/gift (e.g. She _____ her friend a birthday card. Answer: sent)
+2. submit vs complete (e.g. The teacher asked the students to _____ their homework by Friday. Answer: submit)
+3. exercise vs diet (e.g. It is important to _____ regularly to stay healthy. Answer: exercise)
+4. happy vs proud (e.g. He was very _____ to receive the award. Answer: happy)
+5. filled with (e.g. The night sky was _____ with thousands of stars. Answer: filled)
+6. enjoyed vs eaten (e.g. The cake was _____ by everyone at the party. Answer: enjoyed)
+7. exhausted vs tired (e.g. He felt _____ after running the marathon. Answer: exhausted)
+8. closed vs shut (e.g. He _____ the door quietly so as not to wake the baby. Answer: closed)
+9. convert into vs move (e.g. They decided to _____ the old building into a museum. Answer: convert)
+10. impressive vs outstanding (e.g. The movie was so _____ that the audience gave a standing ovation. Answer: impressive)
+11. flooded (e.g. The road was _____ due to heavy rainfall. Answer: flooded)
+12. built vs constructed (e.g. The bridge was _____ over a wide river. Answer: built)
+13. cold vs freezing (e.g. The weather was very _____ during the winter season. Answer: cold)
+14. beautiful (e.g. The flowers in the garden looked very _____. Answer: beautiful)
+15. amused vs funny (e.g. She was so _____ that she could not stop laughing. Answer: amused)
+16. studied vs practiced (e.g. The student _____ hard for the final examination. Answer: studied)
+17. essential vs source (e.g. Water is _____ for the survival of all living beings. Answer: essential)
+18. created vs has (e.g. She _____ a beautiful painting for the art competition. Answer: created)
+19. arrives vs goes (e.g. He always _____ to school on time. Answer: arrives)
+20. slept vs sleep (e.g. The baby _____ peacefully in the cradle. Answer: slept)
+
+Generate new sentences testing these exact 20 patterns and concepts, but do not copy the exact sentences word for word.`
+    : difficulty === "medium"
+    ? `Medium level: Focus on high-frequency placement verbs/adjectives and collocations. Frame questions testing these:
+Verbs: arrive, achieve, obtain, acquire, create, convert, submit, receive, accept, reject, improve, reduce, increase, maintain, prevent, avoid, provide, develop, establish, perform.
+Adjectives: essential, impressive, efficient, effective, significant, remarkable, successful, exhausted, delighted, amused, accurate, reliable, beautiful, dangerous, difficult, simple, powerful, useful, modern, traditional.
+Collocations to test:
+- submit assignment
+- make decision
+- send email
+- receive award
+- heavy rain
+- strong coffee
+- fast learner
+- highly qualified
+- deeply concerned
+- closely related
+- pay attention
+- draw conclusion
+- solve problem
+- gain experience
+- conduct research
+- reach destination
+- arrive on time
+- build bridge
+- create software`
+    : `Hard level: Focus on standard English idioms commonly found in TCS NQT exams. Frame questions testing these idioms (the blank should represent the key word in the idiom):
+- burn the midnight oil (blank: midnight)
+- once in a blue moon (blank: blue)
+- break the ice (blank: ice)
+- spill the beans (blank: beans)
+- miss the boat (blank: boat)
+- hit the nail on the head (blank: head)
+- under the weather (blank: weather)
+- bite the bullet (blank: bullet)
+- cost an arm and a leg (blank: leg)
+- blessing in disguise (blank: disguise)
+- keep your chin up (blank: up)
+- on cloud nine (blank: nine)
+- call it a day (blank: day)
+- face the music (blank: music)
+- butterflies in stomach (blank: stomach)
+- get act together (blank: together)
+- add fuel to fire (blank: fire)
+- eleventh hour (blank: hour)
+- cry over spilled milk (blank: milk)
+- in the dark (blank: dark)`
+}
+
+Output MUST be a JSON object containing an array of 20 question objects.
+Format:
+{
+  "questions": [
+    {
+      "id": "ai_1",
+      "sentence": "The candidate had to _____ a decision quickly.",
+      "answers": ["make", "take", "reach"],
+      "hint": "Collocation: make a decision"
+    }
+  ]
+}`,
+                    },
+                  ],
+                },
+              ],
+              generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                  type: "OBJECT",
+                  properties: {
+                    questions: {
+                      type: "ARRAY",
+                      items: {
+                        type: "OBJECT",
+                        properties: {
+                          id: { type: "STRING" },
+                          sentence: { type: "STRING" },
+                          answers: {
+                            type: "ARRAY",
+                            items: { type: "STRING" },
+                          },
+                          hint: { type: "STRING" },
+                        },
+                        required: ["id", "sentence", "answers", "hint"],
+                      },
+                    },
+                  },
+                  required: ["questions"],
+                },
+              },
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`API returned status ${response.status}`);
+        }
+
+        const data = await response.json();
+        const jsonText = data.candidates[0].content.parts[0].text;
+        const parsed = JSON.parse(jsonText);
+        
+        if (parsed && parsed.questions && parsed.questions.length > 0) {
+          setQuestions(parsed.questions);
+          setLoadingAI(false);
+          return;
+        }
+        throw new Error("No questions found in API response");
+      } catch (err) {
+        console.error("AI question generation failed:", err);
+        setAiError(err.message || "Failed to generate AI questions");
+        setLoadingAI(false);
+        // Fallback to local
+        const q = getRandomQuestions(difficulty, TOTAL_QUESTIONS);
+        setQuestions(q);
+      }
+    } else {
+      const q = getRandomQuestions(difficulty, TOTAL_QUESTIONS);
+      setQuestions(q);
+    }
+  }, [difficulty, useAI, apiKey]);
+
   // Load random questions on mount
   useEffect(() => {
-    const q = getRandomQuestions(difficulty, TOTAL_QUESTIONS);
-    setQuestions(q);
-  }, [difficulty]);
+    loadQuestions();
+  }, [loadQuestions]);
 
   const moveToNext = useCallback(() => {
     clearInterval(timerRef.current);
@@ -136,6 +307,16 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
     return { correct, wrong, unanswered, details, total: questions.length };
   };
 
+  if (loadingAI) {
+    return (
+      <div className="loading-screen">
+        <div className="loader"></div>
+        <p>🤖 AI is generating 20 custom questions for you...</p>
+        <span className="loading-subtext">Powered by Gemini 2.5 Flash</span>
+      </div>
+    );
+  }
+
   if (questions.length === 0) {
     return (
       <div className="loading-screen">
@@ -153,12 +334,12 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
         difficulty={difficulty}
         hintsUsed={hintsUsed}
         onRetry={() => {
-          setQuestions(getRandomQuestions(difficulty, TOTAL_QUESTIONS));
-          setCurrentIndex(0);
           setAnswers({});
+          setCurrentIndex(0);
           setTimeLeft(TIMER_DURATION);
           setIsFinished(false);
           setHintsUsed(0);
+          loadQuestions();
         }}
         onBack={onBack}
         onFinish={onFinish}
@@ -193,11 +374,13 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
       <div className="test-header">
         <div className="test-header-left">
           <span className={`difficulty-badge ${difficulty}`}>{difficulty.toUpperCase()}</span>
+          {useAI && <span className="ai-badge">🤖 AI MODE</span>}
           <span className="question-counter">
             Question {currentIndex + 1} of {questions.length}
           </span>
         </div>
         <div className="test-header-right">
+          {aiError && <span className="ai-error-tag" title={aiError}>Fallback Active ⚠️</span>}
           <button className="btn-outline btn-sm" onClick={handleFinishTest}>
             End Test
           </button>
@@ -242,8 +425,8 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
         {/* Hint */}
         {showHint && (
           <div className="hint-box">
-            <span className="hint-icon">💡</span>
-            <span>{currentQ.hint}</span>
+            <span className="hint-box-title">💡 Hint</span>
+            <p className="hint-box-text">{currentQ.hint}</p>
           </div>
         )}
       </div>
@@ -387,7 +570,7 @@ function ResultsScreen({ results, difficulty, hintsUsed, onRetry, onBack, onFini
         {/* Action Buttons */}
         <div className="results-actions">
           <button className="btn-primary" onClick={onRetry}>
-            🔄 Retry Same Level
+            🔄 Try Another Test
           </button>
           <button className="btn-secondary" onClick={onBack}>
             🏠 Change Difficulty
