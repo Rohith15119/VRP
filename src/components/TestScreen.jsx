@@ -96,6 +96,14 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
     setIsFinished(true);
   };
 
+  const sanitizeWord = (word) => {
+    if (!word) return "";
+    return word
+      .trim()
+      .toLowerCase()
+      .replace(/^[.,\/#!$%\^&\*;:{}=\-_`~()'"\s\\]+|[.,\/#!$%\^&\*;:{}=\-_`~()'"\s\\]+$/g, "");
+  };
+
   // Calculate results
   const calculateResults = () => {
     let correct = 0;
@@ -103,11 +111,13 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
     let unanswered = 0;
 
     const details = questions.map((q) => {
-      const userAnswer = (answers[q.id] || "").trim().toLowerCase();
-      const acceptedAnswers = q.answers.map((a) => a.toLowerCase());
-      const isCorrect = acceptedAnswers.includes(userAnswer);
+      const rawUserAns = answers[q.id] || "";
+      const cleanUserAns = sanitizeWord(rawUserAns);
+      const acceptedAnswers = q.answers.map((a) => sanitizeWord(a));
+      
+      const isCorrect = cleanUserAns !== "" && acceptedAnswers.includes(cleanUserAns);
 
-      if (!userAnswer) {
+      if (!rawUserAns.trim()) {
         unanswered++;
       } else if (isCorrect) {
         correct++;
@@ -117,9 +127,9 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
 
       return {
         ...q,
-        userAnswer: answers[q.id] || "",
+        userAnswer: rawUserAns,
         isCorrect,
-        isUnanswered: !userAnswer,
+        isUnanswered: !rawUserAns.trim(),
       };
     });
 
