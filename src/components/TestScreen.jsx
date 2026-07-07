@@ -52,88 +52,54 @@ export default function TestScreen({ difficulty, onFinish, onBack, useAI, apiKey
                       text: `Generate 20 unique sentence completion questions for TCS NQT Verbal Ability practice.
 Difficulty: ${difficulty.toUpperCase()}
 
-Guidelines based on difficulty level:
+You must strictly adhere to the following category criteria for difficulty:
+
 ${
   difficulty === "easy"
-    ? `Easy level: Focus on simple sentences testing basic grammar/vocabulary confusions. Frame questions testing these exact concepts:
-1. send vs give/gift (e.g. She _____ her friend a birthday card. Answer: sent)
-2. submit vs complete (e.g. The teacher asked the students to _____ their homework by Friday. Answer: submit)
-3. exercise vs diet (e.g. It is important to _____ regularly to stay healthy. Answer: exercise)
-4. happy vs proud (e.g. He was very _____ to receive the award. Answer: happy)
-5. filled with (e.g. The night sky was _____ with thousands of stars. Answer: filled)
-6. enjoyed vs eaten (e.g. The cake was _____ by everyone at the party. Answer: enjoyed)
-7. exhausted vs tired (e.g. He felt _____ after running the marathon. Answer: exhausted)
-8. closed vs shut (e.g. He _____ the door quietly so as not to wake the baby. Answer: closed)
-9. convert into vs move (e.g. They decided to _____ the old building into a museum. Answer: convert)
-10. impressive vs outstanding (e.g. The movie was so _____ that the audience gave a standing ovation. Answer: impressive)
-11. flooded (e.g. The road was _____ due to heavy rainfall. Answer: flooded)
-12. built vs constructed (e.g. The bridge was _____ over a wide river. Answer: built)
-13. cold vs freezing (e.g. The weather was very _____ during the winter season. Answer: cold)
-14. beautiful (e.g. The flowers in the garden looked very _____. Answer: beautiful)
-15. amused vs funny (e.g. She was so _____ that she could not stop laughing. Answer: amused)
-16. studied vs practiced (e.g. The student _____ hard for the final examination. Answer: studied)
-17. essential vs source (e.g. Water is _____ for the survival of all living beings. Answer: essential)
-18. created vs has (e.g. She _____ a beautiful painting for the art competition. Answer: created)
-19. arrives vs goes (e.g. He always _____ to school on time. Answer: arrives)
-20. slept vs sleep (e.g. The baby _____ peacefully in the cradle. Answer: slept)
-
-Generate new sentences testing these exact 20 patterns and concepts, but do not copy the exact sentences word for word.`
+    ? `EASY Difficulty Criteria (Focus on basic grammar, tenses, articles, pronouns, and daily life verbs/collocations):
+- D1. Subject-Verb Agreement: is, are, was, were, has, have, does, do.
+- D2. Verb Tenses: go/went/gone, eat/ate/eaten, sleep/slept, study/studied.
+- D3. Passive Voice: built, completed, enjoyed, approved, selected.
+- D4. Articles: a, an, the.
+- D5. Pronouns: who, whom, whose, which, that.
+- D6. Determiners: few, fewer, little, less, many, much, some, any, every, each.
+- A4. Daily Life Verbs: eat, drink, sleep, walk, arrive, leave, close, open, carry, bring, keep, wear, cook, wash, travel.
+- M. Daily Conversation Collocations: keep promises, drink water, sleep early, open door, close window, switch off light, answer phone, catch bus.
+- Simple Contexts: e.g. "The weather was very cold in winter" or "The flowers in the garden looked beautiful."`
     : difficulty === "medium"
-    ? `Medium level: Focus on high-frequency placement verbs/adjectives and collocations. Frame questions testing these:
-Verbs: arrive, achieve, obtain, acquire, create, convert, submit, receive, accept, reject, improve, reduce, increase, maintain, prevent, avoid, provide, develop, establish, perform.
-Adjectives: essential, impressive, efficient, effective, significant, remarkable, successful, exhausted, delighted, amused, accurate, reliable, beautiful, dangerous, difficult, simple, powerful, useful, modern, traditional.
-Collocations to test:
-- submit assignment
-- make decision
-- send email
-- receive award
-- heavy rain
-- strong coffee
-- fast learner
-- highly qualified
-- deeply concerned
-- closely related
-- pay attention
-- draw conclusion
-- solve problem
-- gain experience
-- conduct research
-- reach destination
-- arrive on time
-- build bridge
-- create software`
-    : `Hard level: Focus on standard English idioms commonly found in TCS NQT exams. Frame questions testing these idioms (the blank should represent the key word in the idiom):
-- burn the midnight oil (blank: midnight)
-- once in a blue moon (blank: blue)
-- break the ice (blank: ice)
-- spill the beans (blank: beans)
-- miss the boat (blank: boat)
-- hit the nail on the head (blank: head)
-- under the weather (blank: weather)
-- bite the bullet (blank: bullet)
-- cost an arm and a leg (blank: leg)
-- blessing in disguise (blank: disguise)
-- keep your chin up (blank: up)
-- on cloud nine (blank: nine)
-- call it a day (blank: day)
-- face the music (blank: music)
-- butterflies in stomach (blank: stomach)
-- get act together (blank: together)
-- add fuel to fire (blank: fire)
-- eleventh hour (blank: hour)
-- cry over spilled milk (blank: milk)
-- in the dark (blank: dark)`
+    ? `MEDIUM Difficulty Criteria (Focus on high-frequency placement verbs, adjectives, functional English, and collocations):
+- B1. Verb + Noun Collocations: make decision, take responsibility, pay attention, draw conclusion, solve problem, conduct research, submit assignment, receive award, achieve target, gain experience, keep promise, follow rules, provide services.
+- B2. Adjective + Noun Collocations: heavy rainfall, strong coffee, valuable contribution, excellent performance, important discovery, technical issue, constructive criticism, serious problem, high quality, good opportunity.
+- B3. Noun + Preposition Collocations: interest in, reason for, solution to, effect on, access to, need for, knowledge of, responsibility for.
+- B4. Verb + Preposition Collocations: depend on, insist on, agree with, believe in, apologize for, suffer from, look after, look for.
+- A1. Common Action Verbs: complete, finish, submit, provide, replace, develop, create, solve, follow, review, approve, achieve, remove, build, convert, expand, reduce, increase, avoid, maintain, improve.
+- A2. Workplace Verbs: recruit, appoint, promote, approve, assign, conduct, manage, organize, schedule, cancel, postpone, delegate, recommend, evaluate.
+- A3. Academic Verbs: study, learn, read, write, answer, explain, understand, memorize, revise, practice, note, submit, review.
+- A5. Technology Verbs: install, update, replace, download, upload, connect, restart, configure, develop, debug, compile.
+- A6. Health Verbs: exercise, recover, quit, avoid, treat, heal, rest, drink, consult, diagnose.
+- Q. Functional English: provide services, submit application, complete work, solve issue, make payment, receive award, develop skills, gain knowledge.`
+    : `HARD Difficulty Criteria (Focus on advanced syntax, prepositions, phrasal verbs, idioms, synonyms/antonyms, and business contexts):
+- E. Preposition-Based Adjectives: good at, afraid of, interested in, capable of, married to, senior to, look forward to, depend on, responsible for.
+- F. Phrasal Verbs: break down, put off, put out, switch off, carry on, give up, look after, look for, turn on, turn off, bring up, take off, take part, break up, come across.
+- G. Fixed Expressions: take initiative, bring to an end, take part, as long as, with a start, at least, in fact, on time, by mistake, in advance.
+- H. Idiomatic Usage: piece of cake, under the weather, once in a blue moon, spill the beans, break the ice, cost an arm and a leg.
+- I. Synonym Selection: essential, important, necessary, vital.
+- J. Antonym Selection: clarify, confuse.
+- K. Business English: performance, department, employee, manager, meeting, deadline, project, promotion, salary, customer, branch, policy, report, documents, services, proposal.
+- L. Academic English: teacher, student, lesson, assignment, paragraph, chapter, topic, exam, answer, question, skills.`
 }
 
 Output MUST be a JSON object containing an array of 20 question objects.
+Ensure the sentence has a single '_____' blank. Provide a list of 3-5 correct answers (synonyms or accepted forms) in the 'answers' array. Provide a brief explanatory 'hint' detailing the collocation, idiom, or grammar rule.
+
 Format:
 {
   "questions": [
     {
       "id": "ai_1",
-      "sentence": "The candidate had to _____ a decision quickly.",
-      "answers": ["make", "take", "reach"],
-      "hint": "Collocation: make a decision"
+      "sentence": "The engineer managed to _____ the issue quickly.",
+      "answers": ["solve", "resolve", "fix", "tackle"],
+      "hint": "Collocation: solve problem / solve issue"
     }
   ]
 }`,
