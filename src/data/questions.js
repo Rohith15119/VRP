@@ -1,10 +1,11 @@
 // Verbal Ability - Sentence Completion Question Bank (Fill-in-the-Blanks Template)
-// Curated specifically based on the user's performance and placement study guide.
-// Easy level: Tests the exact 20 questions the user recently struggled with, helping them learn the differences.
-// Medium level: Tests high-frequency placement verbs, adjectives, and collocations.
-// Hard level: Tests common idioms repeatedly found in TCS NQT exams.
+// Curated specifically for TCS NQT Verbal Ability preparation.
+// Focuses on: Prepositions, Conjunctions, Vocabulary, and Idioms (NO phrasal verbs).
+// Contains 40+ questions per difficulty level to ensure true randomized subsets of 20 each attempt.
+// Each question has multiple acceptable synonyms. The first element is the primary/best answer.
 
 export const easyQuestions = [
+  // --- USER'S ERROR BANK (The 20 questions they struggled with) ---
   {
     id: "e1",
     sentence: "She _____ her friend a birthday card.",
@@ -125,10 +126,144 @@ export const easyQuestions = [
     answers: ["slept", "rested", "lay", "slumbered", "dozed"],
     hint: "Past tense of sleep.",
   },
+
+  // --- ADDITIONAL EASY QUESTIONS FOR VARIETY (e21 - e42) ---
+  {
+    id: "e21",
+    sentence: "The conference will take place _____ Wednesday morning.",
+    answers: ["on", "this", "next"],
+    hint: "Preposition used before days of the week.",
+  },
+  {
+    id: "e22",
+    sentence: "He went to the library _____ order to find a quiet study space.",
+    answers: ["in", "with"],
+    hint: "Phrase expressing purpose: '_____ order to'.",
+  },
+  {
+    id: "e23",
+    sentence: "She is very good _____ mathematics and logical reasoning.",
+    answers: ["at", "in", "with"],
+    hint: "Preposition indicating competence in a subject.",
+  },
+  {
+    id: "e24",
+    sentence: "_____ it was late, the developers kept working on the bug.",
+    answers: ["although", "though", "even though", "while"],
+    hint: "Conjunction indicating contrast or concession.",
+  },
+  {
+    id: "e25",
+    sentence: "You will receive the login link _____ you register on the portal.",
+    answers: ["if", "once", "when", "after", "provided"],
+    hint: "Conjunction expressing condition or time sequence.",
+  },
+  {
+    id: "e26",
+    sentence: "The phone rang _____ he was writing the email.",
+    answers: ["while", "when", "as"],
+    hint: "Conjunction indicating simultaneous actions.",
+  },
+  {
+    id: "e27",
+    sentence: "Please turn _____ the computer when you are finished.",
+    answers: ["off", "down"],
+    hint: "Opposite of turn on.",
+  },
+  {
+    id: "e28",
+    sentence: "The office remains closed _____ Sundays.",
+    answers: ["on", "every"],
+    hint: "Preposition used for calendar days.",
+  },
+  {
+    id: "e29",
+    sentence: "He has been living in New York _____ three years.",
+    answers: ["for"],
+    hint: "Preposition used to express a duration of time.",
+  },
+  {
+    id: "e30",
+    sentence: "We should arrive _____ the airport early to check in.",
+    answers: ["at", "in"],
+    hint: "Preposition used for specific coordinates or places.",
+  },
+  {
+    id: "e31",
+    sentence: "The manager was pleased _____ the team's presentation.",
+    answers: ["with", "by", "about"],
+    hint: "Preposition following 'pleased' to show satisfaction.",
+  },
+  {
+    id: "e32",
+    sentence: "They had to delay the launch _____ to server issues.",
+    answers: ["due", "owing"],
+    hint: "Phrase meaning 'because of' when followed by 'to'.",
+  },
+  {
+    id: "e33",
+    sentence: "She has registered _____ the python coding challenge.",
+    answers: ["for", "in"],
+    hint: "Preposition following 'registered'.",
+  },
+  {
+    id: "e34",
+    sentence: "He excels _____ programming in Java.",
+    answers: ["in", "at"],
+    hint: "Preposition indicating a field of excellence.",
+  },
+  {
+    id: "e35",
+    sentence: "We walked _____ the corridor to reach the meeting room.",
+    answers: ["down", "through", "along"],
+    hint: "Preposition indicating direction or passage.",
+  },
+  {
+    id: "e36",
+    sentence: "The coffee was _____ hot for me to drink immediately.",
+    answers: ["too", "so", "very"],
+    hint: "Adverb meaning excessively.",
+  },
+  {
+    id: "e37",
+    sentence: "He is interested _____ learning web development.",
+    answers: ["in", "on"],
+    hint: "Preposition indicating attention or desire.",
+  },
+  {
+    id: "e38",
+    sentence: "You must choose _____ these two programming tracks.",
+    answers: ["between", "from"],
+    hint: "Preposition used when selecting between two options.",
+  },
+  {
+    id: "e39",
+    sentence: "The project got _____ a rocky start but ended well.",
+    answers: ["off to", "to"],
+    hint: "Collocation: To get _____ a start.",
+  },
+  {
+    id: "e40",
+    sentence: "I cannot agree _____ you on this strategy.",
+    answers: ["with", "to", "on"],
+    hint: "Preposition following 'agree' when referring to a person.",
+  },
+  {
+    id: "e41",
+    sentence: "The leaves fall from the trees _____ autumn.",
+    answers: ["in", "during"],
+    hint: "Preposition used for seasons.",
+  },
+  {
+    id: "e42",
+    sentence: "She is married _____ a famous software architect.",
+    answers: ["to", "with"],
+    hint: "Preposition that follows 'married' in standard grammar.",
+  },
 ];
 
 export const mediumQuestions = [
-  // --- Collocations ---
+  // --- COLLOCATIONS & HIGH FREQUENCY VOCABULARY ---
   {
     id: "m1",
     sentence: "The CEO had to _____ a difficult decision regarding the project budget.",
@@ -189,8 +324,6 @@ export const mediumQuestions = [
     answers: ["gain", "get", "acquire", "obtain"],
     hint: "Collocation: To acquire experience.",
   },
-
-  // --- High-Frequency Verbs ---
   {
     id: "m11",
     sentence: "We must find a way to _____ the expenses to stay within budget.",
@@ -221,8 +354,6 @@ export const mediumQuestions = [
     answers: ["achieve", "reach", "hit", "attain", "meet"],
     hint: "Verb meaning to reach or accomplish a goal.",
   },
-
-  // --- High-Frequency Adjectives ---
   {
     id: "m16",
     sentence: "The new coding editor is highly _____ and responsive.",
@@ -253,10 +384,132 @@ export const mediumQuestions = [
     answers: ["accurate", "precise", "reliable", "solid", "correct"],
     hint: "Adjective meaning correct in all details; exact.",
   },
+
+  // --- ADDITIONAL MEDIUM QUESTIONS FOR VARIETY (m21 - m40) ---
+  {
+    id: "m21",
+    sentence: "The argument was based _____ the data gathered from the survey.",
+    answers: ["on", "upon"],
+    hint: "Preposition following 'based' to show foundation.",
+  },
+  {
+    id: "m22",
+    sentence: "He has a strong aversion _____ waking up early in the morning.",
+    answers: ["to", "towards", "for"],
+    hint: "Preposition meaning dislike or opposition.",
+  },
+  {
+    id: "m23",
+    sentence: "She is capable _____ handling difficult tasks under pressure.",
+    answers: ["of", "for"],
+    hint: "Preposition following 'capable'.",
+  },
+  {
+    id: "m24",
+    sentence: "He was advised to refrain _____ making personal comments.",
+    answers: ["from", "of"],
+    hint: "Preposition meaning to stop oneself from doing something.",
+  },
+  {
+    id: "m25",
+    sentence: "The changes were made in accordance _____ the new regulations.",
+    answers: ["with", "to"],
+    hint: "Preposition following 'in accordance' meaning conforming to.",
+  },
+  {
+    id: "m26",
+    sentence: "She was completely oblivious _____ the noise outside.",
+    answers: ["to", "of"],
+    hint: "Preposition meaning not aware of or not noticing.",
+  },
+  {
+    id: "m27",
+    sentence: "The new system is compatible _____ older computers.",
+    answers: ["with", "to"],
+    hint: "Preposition meaning able to exist together without conflict.",
+  },
+  {
+    id: "m28",
+    sentence: "The manager was reluctant to commit _____ a final budget.",
+    answers: ["to", "on"],
+    hint: "Preposition following 'commit'.",
+  },
+  {
+    id: "m29",
+    sentence: "He took great pride _____ completing the assignment on his own.",
+    answers: ["in", "with"],
+    hint: "Preposition following 'pride'.",
+  },
+  {
+    id: "m30",
+    sentence: "We arrived _____ a decision after debating for two hours.",
+    answers: ["at", "to", "on"],
+    hint: "Preposition following 'arrived' when referring to a conclusion.",
+  },
+  {
+    id: "m31",
+    sentence: "The project was successful _____ the technical problems we faced.",
+    answers: ["despite", "in spite of", "notwithstanding"],
+    hint: "Conjunction indicating contrast (followed by a noun/phrase).",
+  },
+  {
+    id: "m32",
+    sentence: "We will proceed _____ we receive further objections from the client.",
+    answers: ["unless", "until", "if"],
+    hint: "Conjunction meaning 'except if'.",
+  },
+  {
+    id: "m33",
+    sentence: "He was offered the job, _____ he decided to decline it.",
+    answers: ["yet", "but", "however", "nevertheless"],
+    hint: "Conjunction indicating contradiction.",
+  },
+  {
+    id: "m34",
+    sentence: "_____ the traffic was sparse, we reached the center quickly.",
+    answers: ["since", "because", "as", "seeing that"],
+    hint: "Conjunction indicating reason.",
+  },
+  {
+    id: "m35",
+    sentence: "You must register now, _____ you will miss the placement drive.",
+    answers: ["otherwise", "else", "or"],
+    hint: "Conjunction showing negative consequence.",
+  },
+  {
+    id: "m36",
+    sentence: "Please _____ your email address before submitting the form.",
+    answers: ["verify", "check", "confirm", "validate"],
+    hint: "Verb meaning to make sure that something is correct.",
+  },
+  {
+    id: "m37",
+    sentence: "The government plans to _____ new laws to protect consumer rights.",
+    answers: ["introduce", "enact", "implement", "pass", "create"],
+    hint: "Verb meaning to start or bring into effect.",
+  },
+  {
+    id: "m38",
+    sentence: "We need to _____ the code to find the source of the error.",
+    answers: ["analyze", "examine", "check", "inspect", "review"],
+    hint: "Verb meaning to examine in detail.",
+  },
+  {
+    id: "m39",
+    sentence: "The CEO was impressed _____ the technical expertise of the team.",
+    answers: ["by", "with", "at"],
+    hint: "Preposition following 'impressed'.",
+  },
+  {
+    id: "m40",
+    sentence: "He has a great talent _____ playing the violin.",
+    answers: ["for", "in"],
+    hint: "Preposition following the noun 'talent'.",
+  },
 ];
 
 export const hardQuestions = [
-  // --- Placement Exam Idioms ---
+  // --- IDIOMS BANK ---
   {
     id: "h1",
     sentence: "She had to burn the _____ oil to complete the project before the deadline.",
@@ -376,6 +629,128 @@ export const hardQuestions = [
     sentence: "They are still in the dark and don't know the first _____ about the new database.",
     answers: ["thing"],
     hint: "Idiom meaning to know nothing at all about a subject.",
+  },
+
+  // --- ADDITIONAL HARD QUESTIONS FOR VARIETY (h21 - h40) ---
+  {
+    id: "h21",
+    sentence: "His behavior was not _____ with the values of our organization.",
+    answers: ["consistent", "compatible", "aligned", "congruent"],
+    hint: "Adjective meaning in agreement or harmony with.",
+  },
+  {
+    id: "h22",
+    sentence: "She remained calm and focused _____ the chaotic environment.",
+    answers: ["amid", "amidst", "despite", "throughout"],
+    hint: "Preposition meaning in the middle of or surrounded by.",
+  },
+  {
+    id: "h23",
+    sentence: "The contract was signed _____ prior consultation with the legal advisor.",
+    answers: ["without", "after", "following"],
+    hint: "Preposition indicating absence or presence of prior action.",
+  },
+  {
+    id: "h24",
+    sentence: "The program was discontinued due to its _____ high operational cost.",
+    answers: ["prohibitively", "extremely", "exorbitantly", "highly"],
+    hint: "Adverb meaning to a degree that prevents or forbids something.",
+  },
+  {
+    id: "h25",
+    sentence: "We must avoid making _____ statements without concrete evidence.",
+    answers: ["sweeping", "broad", "general", "hasty", "unwarranted"],
+    hint: "Adjective meaning wide-ranging or oversimplified.",
+  },
+  {
+    id: "h26",
+    sentence: "The device is built to operate under _____ environmental conditions.",
+    answers: ["extreme", "adverse", "severe", "harsh", "difficult"],
+    hint: "Adjective meaning unfavorable or very challenging.",
+  },
+  {
+    id: "h27",
+    sentence: "The decision was made in _____ of our long-term growth plan.",
+    answers: ["pursuit", "furtherance", "support"],
+    hint: "Noun meaning the action of trying to achieve something.",
+  },
+  {
+    id: "h28",
+    sentence: "He was accused of using _____ methods to bypass the security wall.",
+    answers: ["deceptive", "unfair", "underhanded", "devious", "cunning"],
+    hint: "Adjective meaning dishonest or sneaky.",
+  },
+  {
+    id: "h29",
+    sentence: "The new rules are not _____ to candidates who registered early.",
+    answers: ["applicable", "relevant", "applied"],
+    hint: "Adjective meaning relevant or appropriate.",
+  },
+  {
+    id: "h30",
+    sentence: "Her research was praised for its _____ contributions to quantum physics.",
+    answers: ["significant", "profound", "major", "substantial", "great"],
+    hint: "Adjective meaning having great depth or impact.",
+  },
+  {
+    id: "h31",
+    sentence: "_____ had they deployed the patch than the server crashed again.",
+    answers: ["no sooner", "scarcely", "hardly"],
+    hint: "Correlative conjunction pair starting with 'No sooner' used with 'than'.",
+  },
+  {
+    id: "h32",
+    sentence: "_____ how hard they tried, they could not recover the deleted database.",
+    answers: ["no matter", "regardless of", "however"],
+    hint: "Phrase meaning 'without being affected by'.",
+  },
+  {
+    id: "h33",
+    sentence: "He refused to sign the deal _____ they agreed to his terms.",
+    answers: ["unless", "until", "except if"],
+    hint: "Conjunction meaning 'if not'.",
+  },
+  {
+    id: "h34",
+    sentence: "We decided to continue the launch, _____ the potential security warning.",
+    answers: ["despite", "notwithstanding", "ignoring", "regardless of"],
+    hint: "Conjunction indicating concession.",
+  },
+  {
+    id: "h35",
+    sentence: "The update was rolled back _____ after several errors were reported.",
+    answers: ["immediately", "shortly", "soon"],
+    hint: "Adverb meaning without delay.",
+  },
+  {
+    id: "h36",
+    sentence: "Adding wrong parameters will only _____ the compilation error.",
+    answers: ["exacerbate", "aggravate", "worsen", "increase"],
+    hint: "Verb meaning to make a problem or bad situation worse.",
+  },
+  {
+    id: "h37",
+    sentence: "The current system was unable to _____ the load during peak traffic hours.",
+    answers: ["withstand", "handle", "bear", "manage", "sustain"],
+    hint: "Verb meaning to hold out against or remain undamaged.",
+  },
+  {
+    id: "h38",
+    sentence: "The government has taken _____ measures to regulate internet piracy.",
+    answers: ["stringent", "drastic", "strict", "concrete", "decisive"],
+    hint: "Adjective meaning strict, precise, and exacting.",
+  },
+  {
+    id: "h39",
+    sentence: "The judge's ruling was based on a _____ reading of the guidelines.",
+    answers: ["literal", "strict", "rigid", "narrow"],
+    hint: "Adjective meaning exactly as written; not metaphorical.",
+  },
+  {
+    id: "h40",
+    sentence: "His contribution to the project was so minor as to be _____.",
+    answers: ["negligible", "insignificant", "inconsequential", "trivial", "minor"],
+    hint: "Adjective meaning so small or unimportant as to be not worth considering.",
   },
 ];
 
