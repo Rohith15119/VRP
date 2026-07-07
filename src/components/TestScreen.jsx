@@ -12,7 +12,6 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
   const [isFinished, setIsFinished] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(0);
-  const inputRef = useRef(null);
   const timerRef = useRef(null);
   const currentIndexRef = useRef(0);
   const questionsRef = useRef([]);
@@ -60,11 +59,8 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
     return () => clearInterval(timerRef.current);
   }, [currentIndex, isFinished, questions.length, moveToNext]);
 
-  // Focus input on question change
+  // Reset hint state on question change
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
     setShowHint(false);
   }, [currentIndex]);
 
@@ -72,19 +68,38 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
     moveToNext();
   }, [moveToNext]);
 
-  const handleInputChange = (e) => {
-    const value = e.target.value;
+  const handleSelectOption = (option) => {
+    if (isFinished) return;
     setAnswers((prev) => ({
       ...prev,
-      [questions[currentIndex].id]: value,
+      [questions[currentIndex].id]: option,
     }));
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleNext();
-    }
-  };
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (isFinished || questions.length === 0) return;
+      const key = e.key.toLowerCase();
+      const currentQ = questions[currentIndexRef.current];
+      if (!currentQ) return;
+
+      if (key === "1" || key === "a") {
+        handleSelectOption(currentQ.options[0]);
+      } else if (key === "2" || key === "b") {
+        handleSelectOption(currentQ.options[1]);
+      } else if (key === "3" || key === "c") {
+        handleSelectOption(currentQ.options[2]);
+      } else if (key === "4" || key === "d") {
+        handleSelectOption(currentQ.options[3]);
+      } else if (key === "enter") {
+        handleNext();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [questions, isFinished, handleNext]);
 
   const handleHint = () => {
     setShowHint(true);
@@ -96,14 +111,6 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
     setIsFinished(true);
   };
 
-  const sanitizeWord = (word) => {
-    if (!word) return "";
-    return word
-      .trim()
-      .toLowerCase()
-      .replace(/^[.,\/#!$%\^&\*;:{}=\-_`~()'"\s\\]+|[.,\/#!$%\^&\*;:{}=\-_`~()'"\s\\]+$/g, "");
-  };
-
   // Calculate results
   const calculateResults = () => {
     let correct = 0;
@@ -112,12 +119,9 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
 
     const details = questions.map((q) => {
       const rawUserAns = answers[q.id] || "";
-      const cleanUserAns = sanitizeWord(rawUserAns);
-      const acceptedAnswers = q.answers.map((a) => sanitizeWord(a));
-      
-      const isCorrect = cleanUserAns !== "" && acceptedAnswers.includes(cleanUserAns);
+      const isCorrect = rawUserAns === q.answer;
 
-      if (!rawUserAns.trim()) {
+      if (!rawUserAns) {
         unanswered++;
       } else if (isCorrect) {
         correct++;
@@ -129,7 +133,7 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
         ...q,
         userAnswer: rawUserAns,
         isCorrect,
-        isUnanswered: !rawUserAns.trim(),
+        isUnanswered: !rawUserAns,
       };
     });
 
@@ -224,20 +228,26 @@ export default function TestScreen({ difficulty, onFinish, onBack }) {
         <div className="question-number">Q{currentIndex + 1}</div>
         <p className="question-sentence">{renderSentence(currentQ.sentence)}</p>
 
-        <div className="answer-section">
-          <input
-            ref={inputRef}
-            type="text"
-            className="answer-input"
-            placeholder="Type your answer here..."
-            value={answers[currentQ.id] || ""}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            autoComplete="off"
-            spellCheck="false"
-          />
-          <p className="input-hint-text">Press <kbd>Enter</kbd> or click Next to continue</p>
+        {/* MCQ Option Grid */}
+        <div className="options-grid">
+          {currentQ.options.map((opt, idx) => {
+            const isSelected = answers[currentQ.id] === opt;
+            const letters = ["A", "B", "C", "D"];
+            return (
+              <button
+                key={opt}
+                className={`option-btn ${isSelected ? "selected" : ""}`}
+                onClick={() => handleSelectOption(opt)}
+              >
+                <span className="option-letter">{letters[idx]}</span>
+                <span className="option-text">{opt}</span>
+              </button>
+            );
+          })}
         </div>
+        <p className="input-hint-text">
+          Press <kbd>A</kbd>, <kbd>B</kbd>, <kbd>C</kbd>, <kbd>D</kbd> or <kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>, <kbd>4</kbd> to select. Press <kbd>Enter</kbd> to continue.
+        </p>
 
         {/* Hint */}
         {showHint && (
@@ -366,16 +376,11 @@ function ResultsScreen({ results, difficulty, hintsUsed, onRetry, onBack, onFini
                 <p className="detail-sentence">{d.sentence}</p>
                 <div className="detail-answers">
                   <span className="detail-correct-answer">
-                    ✓ Best answer: <strong>{d.answers[0]}</strong>
+                    ✓ Correct answer: <strong>{d.answer}</strong>
                   </span>
-                  {d.answers.length > 1 && (
-                    <span className="detail-also-accepted">
-                      Also accepted: {d.answers.slice(1).join(", ")}
-                    </span>
-                  )}
                   {!d.isUnanswered && !d.isCorrect && (
                     <span className="detail-user-answer">
-                      ✗ Your answer: <strong>{d.userAnswer}</strong>
+                      ✗ Your selection: <strong>{d.userAnswer}</strong>
                     </span>
                   )}
                 </div>
