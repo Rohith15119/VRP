@@ -56,61 +56,66 @@ export default function TestScreen({ difficulty, onFinish, onBack, useAI, apiKey
               {
                 parts: [
                   {
-                    text: `Generate exactly ${BATCH_SIZE} unique sentence completion questions for TCS NQT Verbal Ability practice.
+                    text: `You are an expert TCS NQT Verbal Ability question setter.
+Your task is to generate exactly ${BATCH_SIZE} unique sentence completion questions that closely resemble the latest TCS NQT (2025–2026) verbal section.
 Difficulty: ${difficulty.toUpperCase()}
 Batch number: ${batchNum} of 4
 
 AVOID DUPLICATING or repeating any of these sentences that have already been generated in this session:
 ${existingSentences || "None"}
 
-You must strictly adhere to the following category criteria for difficulty:
+CRITICAL RULES:
+- The questions should NOT resemble GRE, GMAT, CAT, IELTS, TOEFL or advanced English vocabulary.
+- Instead, generate practical, functional English similar to TCS campus placement exams.
+- Difficulty Level: CEFR A2 to B1 only.
+- Vocabulary should consist of everyday English, workplace English, academic English, technology English and business English.
+- Do NOT use obscure or literary vocabulary.
+- Generate questions ONLY from these categories:
+  1. Common Action Verbs (complete, finish, submit, provide, replace, develop, create, solve, follow, review, approve, achieve, remove, build, convert, expand, reduce, increase, avoid, maintain, improve)
+  2. Workplace English (manager, employee, customer, department, project, meeting, report, documents, deadline, performance, promotion, services, software, policy, branch, target, contribution)
+  3. Academic English (teacher, student, assignment, lesson, topic, paragraph, chapter, skills, exam, question, answer, study, review, practice, understand)
+  4. Daily Life Vocabulary (drink, sleep, walk, travel, arrive, leave, close, open, carry, bring, wash, wear, cook, eat)
+  5. Technology Vocabulary (install, update, replace, connect, download, upload, restart, configure, develop, software, application, database, server, system)
+  6. Health Vocabulary (exercise, recover, heal, rest, drink, avoid, quit, consult, diagnose, healthy)
+  7. Business Vocabulary (performance, contribution, manager, employee, meeting, deadline, customer, promotion, department, policy, proposal, target, strategy)
+  8. Common Collocations (aim for 40% weightage): complete project, solve problem, provide services, submit assignment, review answers, approve report, receive award, achieve target, gain experience, keep promise, follow rules, pay attention, draw conclusion, conduct research, make decision, take responsibility, expand business, valuable contribution, excellent performance, technical issue, heavy rainfall, constructive criticism
+  9. Fixed Expressions (take part, take initiative, bring to an end, switch off, break down, look forward to, as long as, with a start, on time, by mistake)
+  10. Preposition-Based Questions (interested in, good at, married to, responsible for, depend on, capable of, senior to, afraid of, insist on, look forward to)
+  11. Grammar-Based Questions (Subject Verb Agreement, Verb Tenses, Articles, Pronouns, Determiners, Passive Voice, Gerunds, Infinitives, Modal Verbs)
+  12. Context-Based Vocabulary (Choose the most natural word according to context, e.g. "The road was ______ after heavy rainfall. Answer: flooded")
+  13. Adjective Selection (essential, valuable, constructive, efficient, accurate, beautiful, happy, proud, amused, impressive, successful)
+  14. Noun Selection (performance, initiative, replacement, discovery, award, solution, research, problem, contribution)
 
-${
-  difficulty === "easy"
-    ? `EASY Difficulty Criteria (Focus on basic grammar, tenses, articles, pronouns, and daily life verbs/collocations):
-- D1. Subject-Verb Agreement: is, are, was, were, has, have, does, do.
-- D2. Verb Tenses: go/went/gone, eat/ate/eaten, sleep/slept, study/studied.
-- D3. Passive Voice: built, completed, enjoyed, approved, selected.
-- D4. Articles: a, an, the.
-- D5. Pronouns: who, whom, whose, which, that.
-- D6. Determiners: few, fewer, little, less, many, much, some, any, every, each.
-- A4. Daily Life Verbs: eat, drink, sleep, walk, arrive, leave, close, open, carry, bring, keep, wear, cook, wash, travel.
-- M. Daily Conversation Collocations: keep promises, drink water, sleep early, open door, close window, switch off light, answer phone, catch bus.
-- Simple Contexts: e.g. "The weather was very cold in winter" or "The flowers in the garden looked beautiful."`
-    : difficulty === "medium"
-    ? `MEDIUM Difficulty Criteria (Focus on high-frequency placement verbs, adjectives, functional English, and collocations):
-- B1. Verb + Noun Collocations: make decision, take responsibility, pay attention, draw conclusion, solve problem, conduct research, submit assignment, receive award, achieve target, gain experience, keep promise, follow rules, provide services.
-- B2. Adjective + Noun Collocations: heavy rainfall, strong coffee, valuable contribution, excellent performance, important discovery, technical issue, constructive criticism, serious problem, high quality, good opportunity.
-- B3. Noun + Preposition Collocations: interest in, reason for, solution to, effect on, access to, need for, knowledge of, responsibility for.
-- B4. Verb + Preposition Collocations: depend on, insist on, agree with, believe in, apologize for, suffer from, look after, look for.
-- A1. Common Action Verbs: complete, finish, submit, provide, replace, develop, create, solve, follow, review, approve, achieve, remove, build, convert, expand, reduce, increase, avoid, maintain, improve.
-- A2. Workplace Verbs: recruit, appoint, promote, approve, assign, conduct, manage, organize, schedule, cancel, postpone, delegate, recommend, evaluate.
-- A3. Academic Verbs: study, learn, read, write, answer, explain, understand, memorize, revise, practice, note, submit, review.
-- A5. Technology Verbs: install, update, replace, download, upload, connect, restart, configure, develop, debug, compile.
-- A6. Health Verbs: exercise, recover, quit, avoid, treat, heal, rest, drink, consult, diagnose.
-- Q. Functional English: provide services, submit application, complete work, solve issue, make payment, receive award, develop skills, gain knowledge.`
-    : `HARD Difficulty Criteria (Focus on advanced syntax, prepositions, phrasal verbs, idioms, synonyms/antonyms, and business contexts):
-- E. Preposition-Based Adjectives: good at, afraid of, interested in, capable of, married to, senior to, look forward to, depend on, responsible for.
-- F. Phrasal Verbs: break down, put off, put out, switch off, carry on, give up, look after, look for, turn on, turn off, bring up, take off, take part, break up, come across.
-- G. Fixed Expressions: take initiative, bring to an end, take part, as long as, with a start, at least, in fact, on time, by mistake, in advance.
-- H. Idiomatic Usage: piece of cake, under the weather, once in a blue moon, spill the beans, break the ice, cost an arm and a leg.
-- I. Synonym Selection: essential, important, necessary, vital.
-- J. Antonym Selection: clarify, confuse.
-- K. Business English: performance, department, employee, manager, meeting, deadline, project, promotion, salary, customer, branch, policy, report, documents, services, proposal.
-- L. Academic English: teacher, student, lesson, assignment, paragraph, chapter, topic, exam, answer, question, skills.`
-}
+QUESTION STYLE:
+- Questions should be natural and have exactly ONE blank (represented as '_____').
+- Only ONE correct answer (the most natural English word. Avoid multiple acceptable answers where possible). List it as the first element in the 'answers' array. If synonyms exist, add them in the array.
+- Use workplace, education, technology, health, banking, business, transportation, communication and daily-life contexts.
+- Avoid poetry, literature and rare words.
+
+Question Distribution to aim for:
+- 40% Collocations
+- 20% Vocabulary
+- 15% Grammar
+- 10% Workplace English
+- 5% Technology
+- 5% Health
+- 5% Daily Life
 
 Output MUST be a JSON object containing an array of exactly ${BATCH_SIZE} question objects.
-Ensure the sentence has a single '_____' blank. Provide a list of 3-5 correct answers (synonyms or accepted forms) in the 'answers' array. Provide a brief explanatory 'hint' detailing the collocation, idiom, or grammar rule.
+Ensure every field in the response schema is filled out.
 
-Format:
+Format example:
 {
   "questions": [
     {
-      "id": "ai_1",
-      "sentence": "The engineer managed to _____ the issue quickly.",
-      "answers": ["solve", "resolve", "fix", "tackle"],
-      "hint": "Collocation: solve problem / solve issue"
+      "id": "ai_${batchNum}_1",
+      "sentence": "The manager asked the employees to _____ the report before submission.",
+      "answers": ["review", "check", "read"],
+      "hint": "Collocation: review report",
+      "explanation": "The verb \\"review\\" naturally collocates with \\"report\\". It means to examine carefully before submission.",
+      "category": "Collocation",
+      "subcategory": "Verb + Noun",
+      "difficultyLevel": "Easy"
     }
   ]
 }`,
@@ -135,8 +140,12 @@ Format:
                           items: { type: "STRING" },
                         },
                         hint: { type: "STRING" },
+                        explanation: { type: "STRING" },
+                        category: { type: "STRING" },
+                        subcategory: { type: "STRING" },
+                        difficultyLevel: { type: "STRING" }
                       },
-                      required: ["id", "sentence", "answers", "hint"],
+                      required: ["id", "sentence", "answers", "hint", "explanation", "category", "subcategory", "difficultyLevel"],
                     },
                   },
                 },
@@ -180,7 +189,11 @@ Format:
         .slice(0, neededCount)
         .map((q, idx) => ({
           ...q,
-          id: `fallback_${idx}_${Date.now()}`
+          id: `fallback_${idx}_${Date.now()}`,
+          explanation: q.hint || "Explanatory review for the grammatical or vocabulary completion slot.",
+          category: "General Grammar / Vocabulary",
+          subcategory: difficulty === "hard" ? "Idioms & Phrases" : "Vocabulary",
+          difficultyLevel: difficulty.toUpperCase()
         }));
 
       setQuestions((prev) => [...prev, ...fallbackQuestions]);
@@ -195,7 +208,13 @@ Format:
     // If not using AI, load all local questions instantly
     if (!useAI || !apiKey) {
       if (questions.length === 0) {
-        const q = getRandomQuestions(difficulty, TOTAL_QUESTIONS);
+        const q = getRandomQuestions(difficulty, TOTAL_QUESTIONS).map((x) => ({
+          ...x,
+          explanation: x.hint || "Explanatory review for the grammatical or vocabulary completion slot.",
+          category: "General Grammar / Vocabulary",
+          subcategory: difficulty === "hard" ? "Idioms & Phrases" : "Vocabulary",
+          difficultyLevel: difficulty.toUpperCase()
+        }));
         setQuestions(q);
       }
       return;
@@ -603,6 +622,26 @@ function ResultsScreen({ results, difficulty, hintsUsed, onRetry, onBack, onFini
                     <span className="detail-user-answer">
                       ✗ Your answer: <strong>{d.userAnswer}</strong>
                     </span>
+                  )}
+                  
+                  {/* Category, Subcategory, & Explanation metadata */}
+                  {(d.category || d.explanation) && (
+                    <div className="detail-metadata-box">
+                      {d.category && (
+                        <div className="metadata-row">
+                          <span className="metadata-tag">Category:</span>
+                          <span className="metadata-value">
+                            {d.category} {d.subcategory ? `· ${d.subcategory}` : ""} {d.difficultyLevel ? `· [${d.difficultyLevel}]` : ""}
+                          </span>
+                        </div>
+                      )}
+                      {d.explanation && (
+                        <div className="metadata-row explanation">
+                          <span className="metadata-tag">Explanation:</span>
+                          <p className="metadata-text">{d.explanation}</p>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

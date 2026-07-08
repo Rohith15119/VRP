@@ -2111,5 +2111,53 @@ body {
   font-weight: 500;
 }
 
+/* ========================================
+   RESULTS REVIEW METADATA BOX
+   ======================================== */
+
+.detail-metadata-box {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.metadata-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.metadata-row.explanation {
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.4rem;
+  border-top: 1px dashed var(--border);
+  padding-top: 0.4rem;
+}
+
+.metadata-tag {
+  font-weight: 700;
+  color: var(--text-secondary);
+  min-width: 90px;
+}
+
+.metadata-value {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.metadata-text {
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+
 
 
