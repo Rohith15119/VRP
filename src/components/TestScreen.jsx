@@ -3,6 +3,7 @@ import { getRandomQuestions } from "../data/questions";
 
 const TIMER_DURATION = 25; // seconds per question
 const TOTAL_QUESTIONS = 20;
+const BATCH_SIZE = 5;
 
 export default function TestScreen({ difficulty, onFinish, onBack, useAI, apiKey }) {
   const [questions, setQuestions] = useState([]);
@@ -13,8 +14,9 @@ export default function TestScreen({ difficulty, onFinish, onBack, useAI, apiKey
   const [showHint, setShowHint] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(0);
   
-  // AI states
+  // AI Pagination states
   const [loadingAI, setLoadingAI] = useState(false);
+  const [fetchingNextBatch, setFetchingNextBatch] = useState(false);
   const [aiError, setAiError] = useState(null);
 
   const inputRef = useRef(null);
@@ -31,26 +33,35 @@ export default function TestScreen({ difficulty, onFinish, onBack, useAI, apiKey
     questionsRef.current = questions;
   }, [questions]);
 
-  // Load questions (AI or Local)
-  const loadQuestions = useCallback(async () => {
-    if (useAI && apiKey) {
+  // Load batch helper
+  const fetchBatch = useCallback(async (batchNum, existingQuestions) => {
+    if (batchNum === 1) {
       setLoadingAI(true);
-      setAiError(null);
-      try {
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              contents: [
-                {
-                  parts: [
-                    {
-                      text: `Generate 20 unique sentence completion questions for TCS NQT Verbal Ability practice.
+    } else {
+      setFetchingNextBatch(true);
+    }
+    setAiError(null);
+
+    try {
+      const existingSentences = existingQuestions.map((q) => q.sentence).join("\n");
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `Generate exactly ${BATCH_SIZE} unique sentence completion questions for TCS NQT Verbal Ability practice.
 Difficulty: ${difficulty.toUpperCase()}
+Batch number: ${batchNum} of 4
+
+AVOID DUPLICATING or repeating any of these sentences that have already been generated in this session:
+${existingSentences || "None"}
 
 You must strictly adhere to the following category criteria for difficulty:
 
@@ -89,7 +100,7 @@ ${
 - L. Academic English: teacher, student, lesson, assignment, paragraph, chapter, topic, exam, answer, question, skills.`
 }
 
-Output MUST be a JSON object containing an array of 20 question objects.
+Output MUST be a JSON object containing an array of exactly ${BATCH_SIZE} question objects.
 Ensure the sentence has a single '_____' blank. Provide a list of 3-5 correct answers (synonyms or accepted forms) in the 'answers' array. Provide a brief explanatory 'hint' detailing the collocation, idiom, or grammar rule.
 
 Format:
@@ -103,78 +114,123 @@ Format:
     }
   ]
 }`,
-                    },
-                  ],
-                },
-              ],
-              generationConfig: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                  type: "OBJECT",
-                  properties: {
-                    questions: {
-                      type: "ARRAY",
-                      items: {
-                        type: "OBJECT",
-                        properties: {
-                          id: { type: "STRING" },
-                          sentence: { type: "STRING" },
-                          answers: {
-                            type: "ARRAY",
-                            items: { type: "STRING" },
-                          },
-                          hint: { type: "STRING" },
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: "OBJECT",
+                properties: {
+                  questions: {
+                    type: "ARRAY",
+                    items: {
+                      type: "OBJECT",
+                      properties: {
+                        id: { type: "STRING" },
+                        sentence: { type: "STRING" },
+                        answers: {
+                          type: "ARRAY",
+                          items: { type: "STRING" },
                         },
-                        required: ["id", "sentence", "answers", "hint"],
+                        hint: { type: "STRING" },
                       },
+                      required: ["id", "sentence", "answers", "hint"],
                     },
                   },
-                  required: ["questions"],
                 },
+                required: ["questions"],
               },
-            }),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`API returned status ${response.status}`);
+            },
+          }),
         }
+      );
 
-        const data = await response.json();
-        const jsonText = data.candidates[0].content.parts[0].text;
-        const parsed = JSON.parse(jsonText);
-        
-        if (parsed && parsed.questions && parsed.questions.length > 0) {
-          setQuestions(parsed.questions);
-          setLoadingAI(false);
-          return;
-        }
+      if (!response.ok) {
+        throw new Error(`API returned status ${response.status}`);
+      }
+
+      const data = await response.json();
+      const jsonText = data.candidates[0].content.parts[0].text;
+      const parsed = JSON.parse(jsonText);
+
+      if (parsed && parsed.questions && parsed.questions.length > 0) {
+        // Assign clean temporary IDs to prevent duplicates
+        const formattedQuestions = parsed.questions.map((q, idx) => ({
+          ...q,
+          id: `ai_${batchNum}_${idx}_${Date.now()}`
+        }));
+
+        setQuestions((prev) => [...prev, ...formattedQuestions]);
+        setAiError(null);
+      } else {
         throw new Error("No questions found in API response");
-      } catch (err) {
-        console.error("AI question generation failed:", err);
-        setAiError(err.message || "Failed to generate AI questions");
-        setLoadingAI(false);
-        // Fallback to local
+      }
+    } catch (err) {
+      console.error(`AI Batch ${batchNum} failed:`, err);
+      setAiError(err.message || "Failed to generate AI questions");
+      
+      // Fallback: fill remaining questions with local questions
+      const currentLength = existingQuestions.length;
+      const neededCount = TOTAL_QUESTIONS - currentLength;
+      const localPool = getRandomQuestions(difficulty, TOTAL_QUESTIONS);
+      
+      const fallbackQuestions = localPool
+        .slice(0, neededCount)
+        .map((q, idx) => ({
+          ...q,
+          id: `fallback_${idx}_${Date.now()}`
+        }));
+
+      setQuestions((prev) => [...prev, ...fallbackQuestions]);
+    } finally {
+      setLoadingAI(false);
+      setFetchingNextBatch(false);
+    }
+  }, [difficulty, apiKey]);
+
+  // Reactive Effect to handle pagination / background prefetching
+  useEffect(() => {
+    // If not using AI, load all local questions instantly
+    if (!useAI || !apiKey) {
+      if (questions.length === 0) {
         const q = getRandomQuestions(difficulty, TOTAL_QUESTIONS);
         setQuestions(q);
       }
-    } else {
-      const q = getRandomQuestions(difficulty, TOTAL_QUESTIONS);
-      setQuestions(q);
+      return;
     }
-  }, [difficulty, useAI, apiKey]);
 
-  // Load random questions on mount
-  useEffect(() => {
-    loadQuestions();
-  }, [loadQuestions]);
+    // AI Mode:
+    if (questions.length === 0 && !loadingAI && !fetchingNextBatch && !aiError) {
+      // Fetch Batch 1 (Q1 - Q5)
+      fetchBatch(1, []);
+    } else if (
+      questions.length > 0 && 
+      questions.length < TOTAL_QUESTIONS && 
+      !fetchingNextBatch && 
+      !loadingAI &&
+      !aiError
+    ) {
+      // Fetch next batch in background
+      const nextBatchNum = Math.floor(questions.length / BATCH_SIZE) + 1;
+      fetchBatch(nextBatchNum, questions);
+    }
+  }, [questions.length, useAI, apiKey, difficulty, fetchingNextBatch, loadingAI, aiError, fetchBatch]);
 
   const moveToNext = useCallback(() => {
     clearInterval(timerRef.current);
+    
+    // Check if we are waiting for a background batch to load
     if (currentIndexRef.current >= questionsRef.current.length - 1) {
+      if (questionsRef.current.length < TOTAL_QUESTIONS) {
+        // Still loading more questions in background, block navigation
+        return;
+      }
       setIsFinished(true);
       return;
     }
+    
     setCurrentIndex((prev) => prev + 1);
     setTimeLeft(TIMER_DURATION);
   }, []);
@@ -219,7 +275,11 @@ Format:
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      handleNext();
+      // Only proceed if we aren't waiting for the next batch
+      const isWaitingForBatch = currentIndex === questions.length - 1 && questions.length < TOTAL_QUESTIONS;
+      if (!isWaitingForBatch) {
+        handleNext();
+      }
     }
   };
 
@@ -277,8 +337,8 @@ Format:
     return (
       <div className="loading-screen">
         <div className="loader"></div>
-        <p>🤖 AI is generating 20 custom questions for you...</p>
-        <span className="loading-subtext">Powered by Gemini 2.5 Flash</span>
+        <p>🤖 AI is preparing the first set of questions...</p>
+        <span className="loading-subtext">Powered by Gemini 2.5 Flash · Should take ~1 second</span>
       </div>
     );
   }
@@ -305,7 +365,8 @@ Format:
           setTimeLeft(TIMER_DURATION);
           setIsFinished(false);
           setHintsUsed(0);
-          loadQuestions();
+          setQuestions([]); // Clear to trigger initial fetch
+          setAiError(null);
         }}
         onBack={onBack}
         onFinish={onFinish}
@@ -314,10 +375,11 @@ Format:
   }
 
   const currentQ = questions[currentIndex];
-  const progress = ((currentIndex + 1) / questions.length) * 100;
+  const progress = ((currentIndex + 1) / TOTAL_QUESTIONS) * 100;
   const timerPercent = (timeLeft / TIMER_DURATION) * 100;
   const timerColor =
     timeLeft <= 5 ? "var(--danger)" : timeLeft <= 10 ? "var(--warning)" : "var(--accent)";
+  const isWaitingForBatch = currentIndex === questions.length - 1 && questions.length < TOTAL_QUESTIONS;
 
   // Render the sentence with blank highlighted
   const renderSentence = (sentence) => {
@@ -340,9 +402,13 @@ Format:
       <div className="test-header">
         <div className="test-header-left">
           <span className={`difficulty-badge ${difficulty}`}>{difficulty.toUpperCase()}</span>
-          {useAI && <span className="ai-badge">🤖 AI MODE</span>}
+          {useAI && (
+            <span className="ai-badge">
+              🤖 AI {fetchingNextBatch ? "PREFETCHING..." : "READY"}
+            </span>
+          )}
           <span className="question-counter">
-            Question {currentIndex + 1} of {questions.length}
+            Question {currentIndex + 1} of {TOTAL_QUESTIONS}
           </span>
         </div>
         <div className="test-header-right">
@@ -378,14 +444,17 @@ Format:
             ref={inputRef}
             type="text"
             className="answer-input"
-            placeholder="Type your answer here..."
+            placeholder={isWaitingForBatch ? "Loading next questions..." : "Type your answer here..."}
             value={answers[currentQ.id] || ""}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
+            disabled={isWaitingForBatch}
             autoComplete="off"
             spellCheck="false"
           />
-          <p className="input-hint-text">Press <kbd>Enter</kbd> or click Next to continue</p>
+          <p className="input-hint-text">
+            {isWaitingForBatch ? "Waiting for the AI to prefetch next set..." : "Press Enter or click Next to continue"}
+          </p>
         </div>
 
         {/* Hint */}
@@ -402,12 +471,20 @@ Format:
         <button
           className="btn-hint"
           onClick={handleHint}
-          disabled={showHint}
+          disabled={showHint || isWaitingForBatch}
         >
           💡 Hint
         </button>
-        <button className="btn-next" onClick={() => handleNext()}>
-          {currentIndex === questions.length - 1 ? "Finish" : "Next →"}
+        <button
+          className="btn-next"
+          onClick={() => handleNext()}
+          disabled={isWaitingForBatch}
+        >
+          {isWaitingForBatch
+            ? "🤖 Generating..."
+            : currentIndex === TOTAL_QUESTIONS - 1
+            ? "Finish"
+            : "Next →"}
         </button>
       </div>
     </div>
